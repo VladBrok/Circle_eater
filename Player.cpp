@@ -1,7 +1,9 @@
 #include "Player.h"
+#include <cassert>
 
 
 Player::Player()
+    : MIN_PLAYER_SIZE(50.f), MAX_PLAYER_SIZE(200.f), MAX_HEALTH(10)
 {
     initShape();
     initVariables();
@@ -21,16 +23,73 @@ void Player::render(sf::RenderTarget& target)
 }
 
 
+void Player::resize(const float additionalSize)
+{
+    if (playerShape.getSize().x + additionalSize <= MAX_PLAYER_SIZE &&
+        playerShape.getSize().x + additionalSize >= MIN_PLAYER_SIZE)
+    {
+        playerShape.setSize(
+            sf::Vector2f(
+                playerShape.getSize().x + additionalSize, playerShape.getSize().y + additionalSize
+                )
+        );
+    }
+}
+
+
+void Player::reduceHealth(const int healthPoints)
+{
+    assert(healthPoints >= 0);
+
+    health -= healthPoints;
+    if (health < 0)
+    {
+        health = 0;
+    }
+}
+
+
+void Player::gainHealth(const int healthPoints)
+{
+    assert(healthPoints >= 0);
+
+    health += healthPoints;
+    if (health > MAX_HEALTH)
+    {
+        health = MAX_HEALTH;
+    }
+}
+
+
+const sf::FloatRect Player::getGlobalBounds() const
+{
+    return playerShape.getGlobalBounds();
+}
+
+
+const int Player::getHealth() const
+{
+    return health;
+}
+
+
+const int Player::getMaxHealth() const
+{
+    return MAX_HEALTH;
+}
+
+
 void Player::initShape()
 {
-    playerShape.setSize(sf::Vector2f(50.f, 50.f));
+    playerShape.setSize(sf::Vector2f(MIN_PLAYER_SIZE, MIN_PLAYER_SIZE));
     playerShape.setFillColor(sf::Color::Green);
 }
 
 
 void Player::initVariables()
 {
-    movementSpeed = 10.f;
+    movementSpeed = 6.f;
+    health = MAX_HEALTH;
 }
 
 
